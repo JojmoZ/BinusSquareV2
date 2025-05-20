@@ -9,7 +9,7 @@
 <div class="bg">
 	<div class="card">
 		<img src={logo} alt="Binus Square" class="logo" />
-		<h1 class="title">Login</h1>
+		<h1 class="title">Register</h1>
 
 		<form method="post" use:enhance class="form">
 			<label>
@@ -23,11 +23,11 @@
 			</label>
 
 			<div class="actions">
-				<button class="login-btn">Login</button>
+				<button class="register-btn">Register</button>
 			</div>
 
 			<div>
-				<p>Don't have an account? <a href="/register">Register</a></p>
+				<p>Already have an account? <a href="/login">Login</a></p>
 			</div>
 
 			{#if form?.message}
@@ -36,7 +36,6 @@
 		</form>
 	</div>
 </div>
-
 <style>
 	.bg {
 		min-height: 100vh;
@@ -93,7 +92,7 @@
 		gap: 0.5rem;
 	}
 
-	.login-btn {
+	.register-btn {
 		flex: 1;
 		padding: 0.5rem;
 		border: none;
@@ -104,14 +103,13 @@
 		transition: background 0.3s;
 	}
 
-	.login-btn {
+	.register-btn {
 		background: #4caf50;
 	}
 
-	.login-btn:hover {
+	.register-btn:hover {
 		background: #43a047;
 	}
-
 
 	.error {
 		color: red;
