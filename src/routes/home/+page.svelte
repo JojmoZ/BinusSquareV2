@@ -3,25 +3,33 @@
 	export let data: { username: string };
 </script>
 
-<Header />
-
-<div class="home">
-	<h1 class="welcome">Hello, {data.username}! 👋</h1>
-	<p class="tagline">Welcome to our take on <strong>New Binus Square</strong>!</p>
-
-	<div class="members">
-		<span class="member" style="top: 10%; left: 15%;">VINCENTIUS JONATHAN TANUJAYA</span>
-		<span class="member" style="top: 25%; right: 20%;">BRAVEN JOSEPH WIDJAJA</span>
-		<span class="member" style="top: 50%; left: 10%;">GERVASIUS RUSSELL</span>
-		<span class="member" style="bottom: 20%; right: 25%;">AQUILA KYNE SUDIRO</span>
-		<span class="member" style="bottom: 10%; left: 20%;">GEOFFREY ANTONIO ARIFIN</span>
-	</div>
+<div class="real-home">
+    <Header />
+    <div class="home">
+        <h1 class="welcome">Hello, {data.username}! 👋</h1>
+        <p class="tagline">Welcome to our take on <strong>New Binus Square</strong>!</p>
+    
+        <div class="members">
+            <span class="member" style="top: 10%; left: 15%;">VINCENTIUS JONATHAN TANUJAYA</span>
+            <span class="member" style="top: 25%; right: 20%;">BRAVEN JOSEPH WIDJAJA</span>
+            <span class="member" style="top: 50%; left: 10%;">GERVASIUS RUSSELL</span>
+            <span class="member" style="bottom: 20%; right: 25%;">AQUILA KYNE SUDIRO</span>
+            <span class="member" style="bottom: 10%; left: 20%;">GEOFFREY ANTONIO ARIFIN</span>
+        </div>
+    </div>
 </div>
 
+
+
 <style>
+    .real-home {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+}
 .home {
 	position: relative;
-	min-height: 100vh;
+	flex: 1;
 	padding: 4rem 2rem;
 	display: flex;
 	flex-direction: column;

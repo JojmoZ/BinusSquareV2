@@ -5,7 +5,7 @@
 
 <header>
 	<div class="corner">
-		<a href="/">
+		<a href="/home">
 			<img src={logo} alt="Binus Square" class="logo"/>
 		</a>
 	</div>
