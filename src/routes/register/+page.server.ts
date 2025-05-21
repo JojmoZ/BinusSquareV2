@@ -19,11 +19,12 @@ export const actions: Actions = {
 
     if (
       typeof username !== "string" ||
-      typeof password !== "string" ||
-      username.length < 3 ||
-      password.length < 6
+      typeof password !== "string"
     ) {
-      return fail(400, { message: "Invalid username or password" });
+      return fail(400, { message: "Type error for Username or Password" });
+    }
+    if (      password.length < 6){
+      return fail(400, { message: "Password must be at least 6 characters" });
     }
 
     const userId = generateUserId();

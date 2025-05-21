@@ -26,7 +26,7 @@
 				<button class="login-btn">Login</button>
 			</div>
 
-			<div>
+			<div style="justify-content: center; display: flex; margin-top: 1rem;">
 				<p>Don't have an account? <a href="/register">Register</a></p>
 			</div>
 
