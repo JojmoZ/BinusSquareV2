@@ -5,6 +5,7 @@
 <div class="home">
 	<h1>Hello, {data.username}! 👋</h1>
 	<p>Welcome to your home page.</p>
+    <a href="/logout">Logout</a>
 </div>
 
 <style>

@@ -1,12 +1,14 @@
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import { redirect } from "@sveltejs/kit";
+import type { PageServerLoad } from "./$types";
+import { redirectIfNotAuthenticated } from "$lib/server/guard";
 
-export const load: PageServerLoad = async ({ locals }) => {
-	if (!locals.user) {
-		throw redirect(302, '/login'); 
-	}
+export const load: PageServerLoad = async (event) => {
+  redirectIfNotAuthenticated(event);
+  if (!event.locals.user) {
+    throw redirect(302, "/login");
+  }
 
-	return {
-		username: locals.user.username
-	};
+  return {
+    username: event.locals.user.username,
+  };
 };

@@ -5,25 +5,26 @@ import { db } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
 import * as auth from "$lib/server/auth";
 import type { Actions } from "./$types";
+import type { PageServerLoad } from "../$types";
+import { redirectIfAuthenticated } from "$lib/server/guard";
 
 function generateUserId() {
   const bytes = crypto.getRandomValues(new Uint8Array(15));
   return encodeBase32LowerCase(bytes);
 }
-
+export const load: PageServerLoad = async (event) => {
+  redirectIfAuthenticated(event);
+};
 export const actions: Actions = {
   default: async (event) => {
     const formData = await event.request.formData();
     const username = formData.get("username");
     const password = formData.get("password");
 
-    if (
-      typeof username !== "string" ||
-      typeof password !== "string"
-    ) {
+    if (typeof username !== "string" || typeof password !== "string") {
       return fail(400, { message: "Type error for Username or Password" });
     }
-    if (      password.length < 6){
+    if (password.length < 6) {
       return fail(400, { message: "Password must be at least 6 characters" });
     }
 
@@ -40,9 +41,7 @@ export const actions: Actions = {
         .insert(table.user)
         .values({ id: userId, username, passwordHash });
 
-      const sessionToken = auth.generateSessionToken();
-      const session = await auth.createSession(sessionToken, userId);
-      auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+   
     } catch (e) {
       return fail(500, { message: "Registration failed" });
     }

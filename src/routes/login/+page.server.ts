@@ -5,7 +5,11 @@ import { db } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
 import * as auth from "$lib/server/auth";
 import type { Actions } from "./$types";
-
+import type { PageServerLoad } from "../$types";
+import { redirectIfAuthenticated } from "$lib/server/guard";
+export const load: PageServerLoad = async (event) => {
+	redirectIfAuthenticated(event);
+}
 export const actions: Actions = {
   default: async (event) => {
     const formData = await event.request.formData();
