@@ -1,14 +1,27 @@
+version: "3.9"
+
 services:
-  db:
-    image: postgres
-    restart: always
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 5432:5432
-    environment: 
+      - "5173:5173"
+    environment:
+      DATABASE_URL: postgres://root:mysecretpassword@db:5432/local
+    restart: always
+
+  db:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: mysecretpassword
       POSTGRES_DB: local
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: always
+
 volumes:
   pgdata:

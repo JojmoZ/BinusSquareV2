@@ -40,8 +40,6 @@ export const actions: Actions = {
       await db
         .insert(table.user)
         .values({ id: userId, username, passwordHash });
-
-   
     } catch (e) {
       return fail(500, { message: "Registration failed" });
     }
