@@ -9,7 +9,6 @@
 			<img src={logo} alt="Binus Square" class="logo"/>
 		</a>
 	</div>
-
 	<nav>
 		<ul>
 			<li aria-current={$page.url.pathname === '/electric-usage' ? 'page' : undefined}>
