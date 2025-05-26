@@ -19,8 +19,21 @@ export const load: PageServerLoad = async (event) => {
       preview_img: table.redeem.preview_img,
     })
     .from(table.redeem);
+
+  const ownedItems = await db
+    .select({
+      id: table.redeem.id,
+      name: table.redeem.name,
+      price: table.redeem.price,
+      preview_img: table.redeem.preview_img,
+    })
+    .from(table.useritems)
+    .innerJoin(table.redeem, eq(table.useritems.redeemId, table.redeem.id))
+    .where(eq(table.useritems.userId, event.locals.user.id));
+
   return {
     items,
+    ownedItems,
     user: event.locals.user,
   };
 };

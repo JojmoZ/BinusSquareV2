@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Header from './../Header.svelte';
+    import { invalidateAll } from '$app/navigation';
 	import type { PageData } from './$types';
 	let { data }: { data: PageData } = $props();
     let showModal = $state<boolean>(false);
@@ -10,56 +11,44 @@
 	showModal = true;
 }
 async function confirmRedeem() {
-	if (!selectedItem) return;
+    if (!selectedItem) return;
 
-	const form = new FormData();
-	form.append("itemId", selectedItem.id.toString());
+    const form = new FormData();
+    form.append("itemId", selectedItem.id.toString());
 
-	const res = await fetch("?/redeemItem", {
-		method: "POST",
-		body: form
-	});
-	const result = await res.json();
+    const res = await fetch("?/redeemItem", {
+        method: "POST",
+        body: form
+    });
+    const result = await res.json();
 
-	if (result?.error) {
-		feedback = result.error;
-	} else {
-		feedback = result.message;
+    if (result?.error) {
+        feedback = result.error;
+    } else {
+        feedback = result.message; 
+        await invalidateAll();
+    }
 
-		data.user.point -= selectedItem.price;
-		const item = data.items.find((i) => i.id === selectedItem?.id);
-		if (item) item.stock -= 1;
-	}
-
-	showModal = false;
-	selectedItem = null;
+    showModal = false;
+    selectedItem = null;
 }
-    async function redeemItem(itemId: number, itemName: string, itemPrice: number) {
-	const confirmed = confirm(`Are you sure you want to redeem "${itemName}" for ${itemPrice} points?`);
-	if (!confirmed) return;
+type OwnedItem = { id: number; name: string; price: number; preview_img: string };
 
-	const form = new FormData();
-	form.append("itemId", itemId.toString());
 
-	const res = await fetch("?/redeemItem", {
-		method: "POST",
-		body: form
-	});
+let groupedOwnedItems = $derived(
+    Object.values(
+        
+        (data.ownedItems || []).reduce((acc: Record<number, OwnedItem & { quantity: number }>, item: OwnedItem) => {
+            if (!acc[item.id]) {
+                acc[item.id] = { ...item, quantity: 1 };
+            } else {
+                acc[item.id].quantity++;
+            }
+            return acc;
+        }, {})
+    )
+);
 
-	const result = await res.json();
-
-	if (result?.error) {
-		alert(result.error);
-	} else {
-		alert(result.message);
-
-		data.user.point -= itemPrice;
-		const item = data.items.find((i) => i.id === itemId);
-		if (item) {
-			item.stock--;
-		}
-	}
-}
 
 </script>
 <div class="real-home">
@@ -82,6 +71,7 @@ async function confirmRedeem() {
                 <p>Price: {item.price} pts</p>
                 <p>Stock: {item.stock}</p>
                 <button
+                class="{item.stock > 0 ? "redeem-button" : ""} {data.user.point < item.price && item.stock > 0  ? 'red-button' : ''}"
 	onclick={() => openRedeemModal(item.id, item.name, item.price)}
 	disabled={item.stock <= 0 || data.user.point < item.price}
 >
@@ -97,11 +87,22 @@ async function confirmRedeem() {
 	</div>
 
 	<div class="items-owned">
-		<h1>Items you Own</h1>
-		<div class="owned-container">
-			<p>(Coming soon)</p>
-		</div>
-	</div>
+        <h1>Items you Redeemed</h1>
+        <div class="owned-container">
+            {#if data.ownedItems.length > 0}
+                {#each groupedOwnedItems  as item}
+                    <div class="redeem-card owned-card">
+                        <img src={item.preview_img} alt={item.name} class="redeem-image" />
+                        <h2>{item.quantity > 1 ? `${item.quantity}x ${item.name}` : item.name}</h2>
+                        <p>Price: {item.price} pts</p>
+                    </div>
+                {/each}
+            {:else}
+                <p>You have not redeemed any items yet.</p>
+            {/if}
+        </div>
+    </div>
+    
 </div>
 {#if showModal && selectedItem}
 <div class="modal-backdrop">
@@ -109,8 +110,8 @@ async function confirmRedeem() {
 		<h2>Confirm Redemption</h2>
 		<p>Are you sure you want to redeem <strong>{selectedItem.name}</strong> for <strong>{selectedItem.price}</strong> points?</p>
 		<div class="modal-buttons">
-			<button onclick={confirmRedeem}>Yes, Redeem</button>
-			<button onclick={() => { showModal = false; selectedItem = null }}>Cancel</button>
+			<button class="yes-redeem" onclick={confirmRedeem}>Yes, Redeem</button>
+			<button class="no-reject" onclick={() => { showModal = false; selectedItem = null }}>Cancel</button>
 		</div>
 	</div>
 </div>
@@ -123,6 +124,40 @@ async function confirmRedeem() {
 </div>
 {/if}
 <style>
+    .owned-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 1rem;
+	padding: 1rem;
+}
+
+.owned-card {
+	background: #eef6f9;
+}
+    .yes-redeem {
+        background-color: #4caf50;
+        color: white;
+    }
+    .yes-redeem:hover {
+        background-color: #45a049;
+        cursor: pointer;
+    }
+    .no-reject {
+        background-color: #f44336;
+        color: white;
+    }
+    .no-reject:hover {
+        background-color: #e53935;
+        cursor: pointer;
+    }
+    .redeem-button:hover{
+        background-color: #3c413c;
+        color: white;
+        cursor: pointer;
+    }
+    .red-button:hover{
+        background-color: red;
+    }
     .redeem-card.sold-out {
 	opacity: 0.5;
 	background-color: #ddd;
