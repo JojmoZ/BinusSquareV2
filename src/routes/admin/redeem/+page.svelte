@@ -2,20 +2,33 @@
     import Header from './../../Header.svelte';
     import { enhance } from '$app/forms';
     import type { PageData, ActionData } from './$types';
-    import type { ActionResult } from '@sveltejs/kit'; 
+    import type { ActionResult } from '@sveltejs/kit';
 
     const { data, form: actionResultForm } = $props<{
         data: PageData;
-        form: ActionData; 
+        form: ActionData;
     }>();
 
     let items = $state(data.items);
+
+    // State for search and filter
+    let searchTerm = $state('');
+    let statusFilter = $state('all'); // 'all', 'active', 'inactive'
+
+    // Derived state for the filtered list of items
+    let filteredItems = $derived(
+        items.filter((item: any) => { // Assuming item has at least itemname and status
+            const matchesSearchTerm = item.itemname.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+            return matchesSearchTerm && matchesStatus;
+        })
+    );
 
     async function updateStock(itemId: string, currentStock: number, change: number) {
         const newStock = currentStock + change;
         if (newStock < 0) return;
 
-        const formData = new FormData(); 
+        const formData = new FormData();
         formData.append("id", itemId);
         formData.append("stock", newStock.toString());
 
@@ -26,12 +39,10 @@
             });
 
             if (!response.ok) {
-                
                 console.error("Failed to update stock on server");
                 return;
             }
 
-            
             const item = items.find((i: any) => i.id === itemId);
             if (item) {
                 item.stock = newStock;
@@ -42,29 +53,13 @@
         }
     }
 
-    
     const handleInsertItemSubmit = () => {
         return async ({ result, formElement }: { result: ActionResult; formElement: HTMLFormElement }) => {
-            
-            
-
             if (result.type === 'success' && result.data?.newItem) {
-                const newItem = result.data.newItem as (typeof items)[0]; 
-
-                
-                
-                items.push(newItem);
-                
-
-                
+                const newItem = result.data.newItem as (typeof items)[0];
+                items.push(newItem); // This will trigger filteredItems to recompute
                 formElement.reset();
-
-                
-                
-                
             }
-            
-            
         };
     };
 </script>
@@ -108,37 +103,70 @@
     {/if}
 </form>
 
+<hr class="section-divider" />
+
 <h2 class="items-heading">Current Items</h2>
+
+<div class="item-filters">
+    <div class="form-group">
+        <label for="searchInput">Search by Name</label>
+        <input type="text" id="searchInput" bind:value={searchTerm} placeholder="Enter item name..." />
+    </div>
+    <div class="form-group">
+        <label for="statusFilterInput">Filter by Status</label>
+        <select id="statusFilterInput" bind:value={statusFilter}>
+            <option value="all">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+    </div>
+</div>
+
 <div class="item-list">
-    {#each items as item (item.id)} <div class="item-card">
-            <img src={item.preview_img} alt={item.itemname} class="item-image" />
-            <div class="item-info">
-                <h3>{item.itemname}</h3>
-                <p>Status: <strong>{item.status}</strong></p>
-                <p>Price: {item.price}</p>
+    {#if filteredItems.length > 0}
+        {#each filteredItems as item (item.id)}
+            <div class="item-card">
+                <img src={item.preview_img} alt={item.itemname} class="item-image" />
+                <div class="item-info">
+                    <h3>{item.itemname}</h3>
+                    <p>Status: <strong>{item.status}</strong></p>
+                    <p>Price: {item.price}</p>
+                </div>
+                <div class="counter">
+                    <button
+                        class="reduce"
+                        onclick={() => updateStock(item.id, item.stock, -1)}
+                        disabled={item.stock <= 0}
+                    >
+                        −
+                    </button>
+                    <p>Stock: {item.stock}</p>
+                    <button
+                        class="increase"
+                        onclick={() => updateStock(item.id, item.stock, 1)}
+                    >
+                        +
+                    </button>
+                </div>
             </div>
-            <div class="counter">
-                <button
-                    class="reduce"
-                    onclick={() => updateStock(item.id, item.stock, -1)}
-                    disabled={item.stock <= 0}
-                >
-                    −
-                </button>
-                <p>Stock: {item.stock}</p>
-                <button
-                    class="increase"
-                    onclick={() => updateStock(item.id, item.stock, 1)}
-                >
-                    +
-                </button>
-            </div>
-        </div>
-    {/each}
+        {/each}
+    {:else}
+        <p class="no-items-message">No items match your current search or filter criteria.</p>
+    {/if}
 </div>
 
 <style>
-    .counter {
+    .reduce:hover{
+        background-color: #5e5757;
+        color: white;
+        cursor:pointer;
+    }
+    .increase:hover{
+        background-color: #5e5757;
+        color: white;
+        cursor:pointer;
+    }
+.counter {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -172,11 +200,12 @@
         color: #2c3e50;
     }
     input,
-    select {
+    select { /* Added select here */
         padding: 0.6rem;
         font-size: 1rem;
         border: 1px solid #ccc;
         border-radius: 0.5rem;
+        box-sizing: border-box; /* Good practice for layout */
     }
     input:focus,
     select:focus {
@@ -212,6 +241,35 @@
         font-size: 1.5rem;
         color: #444;
     }
+
+    .section-divider {
+        border: 0;
+        height: 1px;
+        background: #e0e0e0;
+        margin: 2rem 0;
+    }
+
+    /* Styles for filters */
+    .item-filters {
+        display: flex;
+        gap: 1rem; /* Space between filter elements */
+        margin: 0 auto 1.5rem auto; /* Centering and margin */
+        padding: 1rem;
+        background-color: #f9f9f9;
+        border-radius: 0.75rem;
+        max-width: 700px; /* Adjust as needed */
+        flex-wrap: wrap; /* Allow filters to wrap on smaller screens */
+    }
+
+    .item-filters .form-group {
+        flex: 1; /* Allow form groups to grow */
+        min-width: 200px; /* Minimum width before wrapping */
+    }
+
+    .item-filters label {
+        font-size: 0.9rem;
+    }
+
     .item-list {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -249,5 +307,11 @@
     .item-info p {
         margin: 0.25rem 0;
         font-size: 0.95rem;
+    }
+    .no-items-message {
+        text-align: center;
+        grid-column: 1 / -1; /* Span all columns if grid is empty */
+        padding: 2rem;
+        color: #555;
     }
 </style>
