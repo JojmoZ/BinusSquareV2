@@ -5,7 +5,6 @@
 	const offset = $derived(modulo(count.current, 1));
 
 	function modulo(n: number, m: number) {
-		// handle negative numbers
 		return ((n % m) + m) % m;
 	}
 </script>

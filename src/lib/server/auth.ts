@@ -30,7 +30,6 @@ export async function validateSessionToken(token: string) {
   const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
   const [result] = await db
     .select({
-      // Adjust user table here to tweak returned data
       user: { id: table.user.id, username: table.user.username },
       session: table.session,
     })
@@ -87,5 +86,5 @@ export function deleteSessionTokenCookie(event: RequestEvent) {
   });
 }
 export async function deleteSession(token: string) {
-  await db.delete(session).where(eq(session.id, token)); // ✅ use session.id here
+  await db.delete(session).where(eq(session.id, token)); 
 }

@@ -2,12 +2,11 @@
     import Header from './../../Header.svelte';
     import { enhance } from '$app/forms';
     import type { PageData, ActionData } from './$types';
-    import type { ActionResult } from '@sveltejs/kit'; // Import ActionResult
+    import type { ActionResult } from '@sveltejs/kit'; 
 
-    // Use a different name for the prop to avoid conflict with HTMLFormElement in enhance callback
     const { data, form: actionResultForm } = $props<{
         data: PageData;
-        form: ActionData; // This will hold the result of the last action (e.g., message, error, newItem)
+        form: ActionData; 
     }>();
 
     let items = $state(data.items);
@@ -16,7 +15,7 @@
         const newStock = currentStock + change;
         if (newStock < 0) return;
 
-        const formData = new FormData(); // Renamed to avoid confusion
+        const formData = new FormData(); 
         formData.append("id", itemId);
         formData.append("stock", newStock.toString());
 
@@ -27,12 +26,12 @@
             });
 
             if (!response.ok) {
-                // Handle server error if needed, e.g., show a toast
+                
                 console.error("Failed to update stock on server");
                 return;
             }
 
-            // Optimistically update local UI
+            
             const item = items.find((i: any) => i.id === itemId);
             if (item) {
                 item.stock = newStock;
@@ -43,29 +42,29 @@
         }
     }
 
-    // Define the callback for the insertItem form's enhance
+    
     const handleInsertItemSubmit = () => {
         return async ({ result, formElement }: { result: ActionResult; formElement: HTMLFormElement }) => {
-            // `result` is the ActionResult from your server action.
-            // `result.data` will be your ActionData if the action was successful.
+            
+            
 
             if (result.type === 'success' && result.data?.newItem) {
-                const newItem = result.data.newItem as (typeof items)[0]; // Cast to your item's type
+                const newItem = result.data.newItem as (typeof items)[0]; 
 
-                // Add the new item to your local $state array
-                // Svelte 5 $state arrays can be mutated directly, and Svelte will react.
+                
+                
                 items.push(newItem);
-                // Alternatively: items = [...items, newItem];
+                
 
-                // Reset the form fields
+                
                 formElement.reset();
 
-                // The `actionResultForm` prop will be automatically updated by SvelteKit
-                // with the result of the action. So, messages like `actionResultForm.message`
-                // will be displayed by your existing template logic.
+                
+                
+                
             }
-            // If result.type === 'failure', actionResultForm.error will be set by SvelteKit
-            // and displayed by your {#if actionResultForm?.error} block.
+            
+            
         };
     };
 </script>
@@ -139,7 +138,6 @@
 </div>
 
 <style>
-    /* Your existing styles */
     .counter {
         display: flex;
         align-items: center;

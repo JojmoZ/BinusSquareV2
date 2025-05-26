@@ -7,7 +7,6 @@
 		form: ActionData;
 	}>();
 
-	// Format today's date as YYYY-MM-DD
 	const today = new Date().toISOString().split('T')[0];
 </script>
 <div class="real-home">

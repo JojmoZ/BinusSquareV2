@@ -10,7 +10,7 @@ export const load: PageServerLoad = async (event) => {
   const user = event.locals.user;
   if (!user) throw redirect(302, "/login");
 
-  // Group by year and month
+  
   const yearRows = await db.execute<{
     year: string;
     month: string;
@@ -27,7 +27,7 @@ export const load: PageServerLoad = async (event) => {
 		ORDER BY year DESC, month ASC
 	`);
 
-  // Group by month/day (assume current year for simplicity)
+  
   const monthRows = await db.execute<{
     month: string;
     day: string;
@@ -44,7 +44,7 @@ export const load: PageServerLoad = async (event) => {
 		ORDER BY month DESC, day ASC
 	`);
 
-  // === Transform data ===
+  
   const byYear: {
     year: number;
     totalKwh: number;
@@ -63,7 +63,7 @@ export const load: PageServerLoad = async (event) => {
     }
     yearEntry.months.push({
       label: new Date(y, m - 1).toLocaleString("default", { month: "short" }),
-      kwh: kwh / 10, // scale for height (e.g., divide max by 100 or scale it yourself)
+      kwh: kwh / 10, 
     });
     yearEntry.totalKwh += kwh;
   }
