@@ -17,7 +17,7 @@
 		if (chart) chart.destroy();
 
 		if (filter === 'year') {
-			const yearData = data.byYear.find((y) => y.year.toString() === selectedYear);
+			const yearData = data.byYear.find((y) => y.year.toString() === selectedYear.toString());
 			if (!yearData) return;
 
 			chart = new Chart(chartCanvas, {
