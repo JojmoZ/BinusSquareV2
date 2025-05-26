@@ -29,7 +29,7 @@
 	</label>
 
 	<label>
-		Watt Usage:
+		Watt Usage(Kwh):
 		<input type="number" name="watt" min="0" required />
 	</label>
 
