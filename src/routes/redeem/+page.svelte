@@ -6,6 +6,70 @@
     let showModal = $state<boolean>(false);
     let selectedItem = $state<{ id: number; name: string; price: number } | null>(null);
     let feedback=  $state<string | null>(null);
+    let redeemSearch = $state('');
+    let ownedSearch = $state('');
+
+    let redeemSort = $state<'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'>('name-asc');
+    let ownedSort = $state<'price-asc' | 'price-desc' | 'name-asc' | 'name-desc'>('name-asc');
+    let availabilityFilter = $state<'all' | 'available' | 'sold-out'>('all');
+    let filteredRedeemItems = $derived(() => {
+	const list = [...data.items];
+
+	let filtered = list.filter((item) =>
+		item.name.toLowerCase().includes(redeemSearch.toLowerCase())
+	);
+    // Filter by availability
+	if (availabilityFilter === 'available') {
+		filtered = filtered.filter(item => item.stock > 0);
+	} else if (availabilityFilter === 'sold-out') {
+		filtered = filtered.filter(item => item.stock <= 0);
+	}
+	switch (redeemSort) {
+		case 'price-asc':
+			filtered.sort((a, b) => a.price - b.price);
+			break;
+		case 'price-desc':
+			filtered.sort((a, b) => b.price - a.price);
+			break;
+		case 'name-desc':
+			filtered.sort((a, b) => b.name.localeCompare(a.name));
+			break;
+		default:
+			filtered.sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	return filtered;
+});
+let groupedOwnedItems = $derived(() => {
+	const grouped = Object.values(
+		(data.ownedItems || []).reduce((acc: Record<number, OwnedItem & { quantity: number }>, item: OwnedItem) => {
+			if (!acc[item.id]) acc[item.id] = { ...item, quantity: 1 };
+			else acc[item.id].quantity++;
+			return acc;
+		}, {})
+	);
+
+	let filtered = grouped.filter((item) =>
+		item.name.toLowerCase().includes(ownedSearch.toLowerCase())
+	);
+
+	switch (ownedSort) {
+		case 'price-asc':
+			filtered.sort((a, b) => a.price - b.price);
+			break;
+		case 'price-desc':
+			filtered.sort((a, b) => b.price - a.price);
+			break;
+		case 'name-desc':
+			filtered.sort((a, b) => b.name.localeCompare(a.name));
+			break;
+		default:
+			filtered.sort((a, b) => a.name.localeCompare(b.name));
+	}
+
+	return filtered;
+});
+
     function openRedeemModal(itemId: number, itemName: string, itemPrice: number) {
 	selectedItem = { id: itemId, name: itemName, price: itemPrice };
 	showModal = true;
@@ -35,21 +99,6 @@ async function confirmRedeem() {
 type OwnedItem = { id: number; name: string; price: number; preview_img: string };
 
 
-let groupedOwnedItems = $derived(
-    Object.values(
-        
-        (data.ownedItems || []).reduce((acc: Record<number, OwnedItem & { quantity: number }>, item: OwnedItem) => {
-            if (!acc[item.id]) {
-                acc[item.id] = { ...item, quantity: 1 };
-            } else {
-                acc[item.id].quantity++;
-            }
-            return acc;
-        }, {})
-    )
-);
-
-
 </script>
 <div class="real-home">
 	<div class="items-redeem">
@@ -57,9 +106,25 @@ let groupedOwnedItems = $derived(
             <h1>Items you Can Redeem</h1>
             <p class="point">{data.user.point} Points to spend</p>
         </div>
+        <div class="filter-bar">
+            <input class="search-bar" type="text" placeholder="Search items..." bind:value={redeemSearch} />
+            <div>
+                <select bind:value={redeemSort}>
+                    <option value="name-asc">Name (A–Z)</option>
+                    <option value="name-desc">Name (Z–A)</option>
+                    <option value="price-asc">Price (Low–High)</option>
+                    <option value="price-desc">Price (High–Low)</option>
+                </select>
+                <select bind:value={availabilityFilter}>
+                    <option value="all">All</option>
+                    <option value="available">Available</option>
+                    <option value="sold-out">Sold Out</option>
+                </select>
+            </div>
+        </div>
 		<div class="redeem-container">
 			{#if data.items.length > 0}
-            {#each data.items as item}
+            {#each filteredRedeemItems() as item}
             <div class="redeem-card {item.stock <= 0 ? 'sold-out' : ''}">
                 <div class="image-wrapper">
                     <img src={item.preview_img} alt={item.name} class="redeem-image" />
@@ -87,10 +152,20 @@ let groupedOwnedItems = $derived(
 	</div>
 
 	<div class="items-owned">
+      
         <h1>Items you Redeemed</h1>
+        <div class="filter-bar">
+            <input class="search-bar" type="text" placeholder="Search owned..." bind:value={ownedSearch} />
+            <select bind:value={ownedSort}>
+                <option value="name-asc">Name (A–Z)</option>
+                <option value="name-desc">Name (Z–A)</option>
+                <option value="price-asc">Price (Low–High)</option>
+                <option value="price-desc">Price (High–Low)</option>
+            </select>
+        </div>
         <div class="owned-container">
             {#if data.ownedItems.length > 0}
-                {#each groupedOwnedItems  as item}
+            {#each groupedOwnedItems() as item}
                     <div class="redeem-card owned-card">
                         <img src={item.preview_img} alt={item.name} class="redeem-image" />
                         <h2>{item.quantity > 1 ? `${item.quantity}x ${item.name}` : item.name}</h2>
@@ -163,7 +238,9 @@ let groupedOwnedItems = $derived(
 	background-color: #ddd;
 	position: relative;
 }
-
+.search-bar{
+    width:auto;
+}
 .image-wrapper {
 	position: relative;
 }
@@ -270,6 +347,22 @@ let groupedOwnedItems = $derived(
 	border-radius: 1rem;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 	text-align: center;
+}
+.filter-bar {
+	display: flex;
+	gap: 1rem;
+	margin: 1rem;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+
+.filter-bar input,
+.filter-bar select {
+    padding: 0.5rem;
+	font-size: 1rem;
+    background-color: white;
+	border-radius: 0.5rem;
+	border: 1px solid #ccc;
 }
 
 .redeem-image {
