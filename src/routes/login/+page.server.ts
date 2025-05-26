@@ -18,9 +18,7 @@ export const actions: Actions = {
 
     if (
       typeof username !== "string" ||
-      typeof password !== "string" ||
-      username.length < 3 ||
-      password.length < 6
+      typeof password !== "string"
     ) {
       return fail(400, { message: "Invalid username or password" });
     }

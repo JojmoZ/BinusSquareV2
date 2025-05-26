@@ -1,115 +1,106 @@
 <script lang="ts">
 	import Header from './../Header.svelte';
-    import type { PageData } from './$types';
+	import { onMount } from 'svelte';
+	import Chart from 'chart.js/auto';
+	import type { PageData } from './$types';
 
-    let { data }: { data: PageData } = $props();
+	const { data } = $props() as { data: PageData };
+
+	let filter = $state<'year' | 'month'>('year');
+	let selectedYear = $state<string>(data.byYear[0]?.year.toString() ?? '');
+	let selectedMonth = $state<string>(data.byMonth[0]?.label ?? '');
+
+	let chartCanvas: HTMLCanvasElement;
+	let chart: Chart | null = null;
+
+	const updateChart = () => {
+		if (chart) chart.destroy();
+
+		if (filter === 'year') {
+			const yearData = data.byYear.find((y) => y.year.toString() === selectedYear);
+			if (!yearData) return;
+
+			chart = new Chart(chartCanvas, {
+				type: 'bar',
+				data: {
+					labels: yearData.months.map((m) => m.label),
+					datasets: [{
+						label: 'Total KWh',
+						data: yearData.months.map((m) => m.kwh),
+						backgroundColor: '#4caf50'
+					}]
+				},
+				options: {
+					responsive: true,
+					scales: {
+						y: { beginAtZero: true }
+					}
+				}
+			});
+		} else {
+			const monthData = data.byMonth.find((m) => m.label === selectedMonth);
+			if (!monthData) return;
+
+			const daysWithData = monthData.days.filter((d) => d.kwh > 0);
+			chart = new Chart(chartCanvas, {
+				type: 'bar',
+				data: {
+					labels: daysWithData.map((d) => d.label),
+					datasets: [{
+						label: 'Daily Wattage',
+						data: daysWithData.map((d) => d.kwh),
+						backgroundColor: '#2196f3'
+					}]
+				},
+				options: {
+					responsive: true,
+					scales: {
+						y: { beginAtZero: true }
+					}
+				}
+			});
+		}
+	};
+
+	$effect(() => {
+	updateChart();
+});
 </script>
 
 <div class="real-home">
-    <Header />
-    <div class="home">
-        <div class="card">
-            <div class="top-row">
-                <div class="title">Pengeluaran</div>
-                <select class="dropdown">
-                    <option>Bulan Februari</option>
-                    <!-- add more months -->
-                </select>
-            </div>
+	<div class="controls">
+		<select bind:value={filter}>
+			<option value="year">Year</option>
+			<option value="month">Month</option>
+		</select>
 
-            <div class="info-row">
-                <strong>xx Kwh</strong>
-                <span class="badge">30%</span>
-            </div>
+		{#if filter === 'year'}
+			<select bind:value={selectedYear}>
+				{#each data.byYear as y}
+					<option value={y.year}>{y.year}</option>
+				{/each}
+			</select>
+		{:else}
+			<select bind:value={selectedMonth}>
+				{#each data.byMonth as m}
+					<option value={m.label}>{m.label}</option>
+				{/each}
+			</select>
+		{/if}
+	</div>
 
-            <div class="bar-chart">
-                <div class="bar" style="height: 70%"></div>
-                <div class="bar" style="height: 30%"></div>
-                <div class="bar" style="height: 70%"></div>
-                <div class="bar" style="height: 40%"></div>
-                <div class="bar" style="height: 100%"></div>
-            </div>
-
-            <div class="bar-labels">
-                <span>17</span>
-                <span>18</span>
-                <span>19</span>
-                <span>20</span>
-                <span>21</span>
-            </div>
-        </div>
-    </div>
+	<canvas bind:this={chartCanvas}></canvas>
 </div>
 
 <style>
-.home {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
+.controls {
+	display: flex;
+	gap: 1rem;
+	padding: 1rem;
+	margin-bottom: 2rem;
 }
-
-.card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-    width: 300px;
-}
-
-.top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.title {
-    font-weight: 500;
-}
-
-.dropdown {
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ccc;
-    font-size: 0.85rem;
-}
-
-.info-row {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.25rem;
-    margin-bottom: 1.25rem;
-}
-
-.badge {
-    background-color: red;
-    color: white;
-    font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 9999px;
-}
-
-.bar-chart {
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-    height: 150px;
-    margin-bottom: 0.5rem;
-    gap: 0.25rem;
-}
-
-.bar {
-    background-color: lightgray;
-    width: 10px;
-    border-radius: 4px;
-}
-
-.bar-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    color: #333;
+canvas {
+	max-width: 100%;
+	max-height: 400px;
 }
 </style>

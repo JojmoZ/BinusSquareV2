@@ -5,7 +5,6 @@
     let { data }: { data: PageData } = $props();
 </script>
 <div class="real-home">
-    <Header/>
     <div class="home">
         
     </div>

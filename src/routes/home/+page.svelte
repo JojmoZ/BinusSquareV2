@@ -4,7 +4,6 @@
 </script>
 
 <div class="real-home">
-    <Header />
     <div class="home">
         <h1 class="welcome">Hello, {data.username}!</h1>
         <p class="tagline">Welcome to our take on <strong>New Binus Square</strong>!</p>

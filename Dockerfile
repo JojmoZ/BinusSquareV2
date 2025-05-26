@@ -2,12 +2,13 @@ FROM node
 
 WORKDIR /myweb
 
-COPY package.json /myweb
-
+COPY package.* /myweb
 RUN npm install
 
 COPY . /myweb
+COPY .env .env
+
 
 EXPOSE 5173
 
-CMD ["sh", "-c", "npx drizzle-kit migrate && npm run dev"]
+CMD ["npm","run","dev"]

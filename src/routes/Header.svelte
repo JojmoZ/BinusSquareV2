@@ -1,28 +1,54 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import logo from '$lib/images/binussquarelogo.svg';
+	export let username: string | null;
 </script>
 
 <header>
 	<div class="corner">
-		<a href="/">
+		<a href="/home">
 			<img src={logo} alt="Binus Square" class="logo"/>
 		</a>
 	</div>
 	<nav>
 		<ul>
+			{#if username === 'admin'}
+			<li aria-current={$page.url.pathname === '/admin/electric' ? 'page' : undefined}>
+				<a href="/admin/electric">Add Electric Usage</a>
+			</li>
+		{:else}
 			<li aria-current={$page.url.pathname === '/electric-usage' ? 'page' : undefined}>
 				<a href="/electric-usage">Electric Usage</a>
 			</li>
-			<li aria-current={$page.url.pathname === '/redeem' ? 'page' : undefined}>
-				<a href="/redeem">Redeem</a>
-			</li>
-			<li aria-current={$page.url.pathname === '/laundry-history' ? 'page' : undefined}>
-				<a href="/laundry-history">Laundry History</a>
-			</li>
-			<li aria-current={$page.url.pathname === '/border-history' ? 'page' : undefined}>
-				<a href="/border-history">Border History</a>
-			</li>
+		{/if}
+		{#if username === 'admin'}
+		<li aria-current={$page.url.pathname === '/admin/redeem' ? 'page' : undefined}>
+			<a href="/admin/redeem">Add Redeem Item</a>
+		</li>
+		{:else}
+		<li aria-current={$page.url.pathname === '/redeem' ? 'page' : undefined}>
+			<a href="/redeem">Redeem</a>
+		</li>
+		{/if}
+		{#if username === 'admin'}
+		<li aria-current={$page.url.pathname === '/admin/laundry' ? 'page' : undefined}>
+			<a href="/admin/laundry">Add Laundry History</a>
+		</li>
+		{:else}
+		<li aria-current={$page.url.pathname === '/laundry-history' ? 'page' : undefined}>
+			<a href="/laundry-history">Laundry History</a>
+		</li>
+		{/if}
+		{#if username === 'admin'}
+		<li aria-current={$page.url.pathname === '/admin/border' ? 'page' : undefined}>
+			<a href="/admin/border">Add Border Creation </a>
+		</li>
+		{:else}
+		<li aria-current={$page.url.pathname === '/border-history' ? 'page' : undefined}>
+			<a href="/border-history">Border History</a>
+		</li>
+
+		{/if}
 			<li>
 				<a href="/logout">Logout</a>
 			</li>
@@ -42,16 +68,9 @@ header {
 	padding: 0 1rem;
 	min-height: 3.5rem;
 	height:auto;
-	/* background-color: #56c596; */
 	background: linear-gradient(to right,#35c98b, #56c596);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
-
-
-	/* .corner {
-		display: flex;
-		align-items: center;
-	} */
 
 	nav ul {
 		display: flex;
