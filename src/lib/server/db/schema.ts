@@ -1,4 +1,5 @@
 import { pgTable, serial, text, integer, timestamp } from "drizzle-orm/pg-core";
+import { title } from "process";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -31,7 +32,54 @@ export const electric = pgTable("electric", {
     .notNull()
     .references(() => user.id),
 });
-
+export const laundry = pgTable("laundry", {
+  id: serial("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+});
+export const bordercreation = pgTable("bordercreation", {
+  id: serial("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id),
+});
+export const borderdetail = pgTable("borderdetail", {
+  id: serial("id").primaryKey(),
+  date: timestamp("date", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  borderId: integer("border_id")
+    .notNull()
+    .references(() => bordercreation.id),
+  title: text("title").notNull(),
+  category: text("category").notNull(),
+  file: text("file").notNull(),
+});
+export const laundry_detail = pgTable("laundry_detail", {
+  id: serial("id").primaryKey(),
+  date: timestamp("date", { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  laundryId: integer("laundry_id")
+    .notNull()
+    .references(() => laundry.id),
+  weight: integer("weight").notNull(),
+});
 export const electric_detail = pgTable("electric_detail", {
   id: serial("id").primaryKey(),
   date: timestamp("date", { withTimezone: true }).notNull().defaultNow(),
@@ -68,3 +116,7 @@ export type UserItems = typeof useritems.$inferSelect;
 export type User = typeof user.$inferSelect;
 export type Electric = typeof electric.$inferSelect;
 export type ElectricDetail = typeof electric_detail.$inferSelect;
+export type Laundry = typeof laundry.$inferSelect;
+export type LaundryDetail = typeof laundry_detail.$inferSelect;
+export type BorderCreation = typeof bordercreation.$inferSelect;
+export type BorderDetail = typeof borderdetail.$inferSelect;
