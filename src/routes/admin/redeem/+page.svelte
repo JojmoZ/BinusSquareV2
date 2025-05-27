@@ -11,13 +11,13 @@
 
     let items = $state(data.items);
 
-    // State for search and filter
+    
     let searchTerm = $state('');
-    let statusFilter = $state('all'); // 'all', 'active', 'inactive'
+    let statusFilter = $state('all'); 
 
-    // Derived state for the filtered list of items
+    
     let filteredItems = $derived(
-        items.filter((item: any) => { // Assuming item has at least itemname and status
+        items.filter((item: any) => { 
             const matchesSearchTerm = item.itemname.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
             return matchesSearchTerm && matchesStatus;
@@ -57,7 +57,7 @@
         return async ({ result, formElement }: { result: ActionResult; formElement: HTMLFormElement }) => {
             if (result.type === 'success' && result.data?.newItem) {
                 const newItem = result.data.newItem as (typeof items)[0];
-                items.push(newItem); // This will trigger filteredItems to recompute
+                items.push(newItem); 
                 formElement.reset();
             }
         };
@@ -200,12 +200,12 @@
         color: #2c3e50;
     }
     input,
-    select { /* Added select here */
+    select { 
         padding: 0.6rem;
         font-size: 1rem;
         border: 1px solid #ccc;
         border-radius: 0.5rem;
-        box-sizing: border-box; /* Good practice for layout */
+        box-sizing: border-box; 
     }
     input:focus,
     select:focus {
@@ -249,21 +249,21 @@
         margin: 2rem 0;
     }
 
-    /* Styles for filters */
+    
     .item-filters {
         display: flex;
-        gap: 1rem; /* Space between filter elements */
-        margin: 0 auto 1.5rem auto; /* Centering and margin */
+        gap: 1rem; 
+        margin: 0 auto 1.5rem auto; 
         padding: 1rem;
         background-color: #f9f9f9;
         border-radius: 0.75rem;
-        max-width: 700px; /* Adjust as needed */
-        flex-wrap: wrap; /* Allow filters to wrap on smaller screens */
+        max-width: 700px; 
+        flex-wrap: wrap; 
     }
 
     .item-filters .form-group {
-        flex: 1; /* Allow form groups to grow */
-        min-width: 200px; /* Minimum width before wrapping */
+        flex: 1; 
+        min-width: 200px; 
     }
 
     .item-filters label {
@@ -310,7 +310,7 @@
     }
     .no-items-message {
         text-align: center;
-        grid-column: 1 / -1; /* Span all columns if grid is empty */
+        grid-column: 1 / -1; 
         padding: 2rem;
         color: #555;
     }

@@ -18,7 +18,6 @@
 	let filtered = list.filter((item) =>
 		item.name.toLowerCase().includes(redeemSearch.toLowerCase())
 	);
-    // Filter by availability
 	if (availabilityFilter === 'available') {
 		filtered = filtered.filter(item => item.stock > 0);
 	} else if (availabilityFilter === 'sold-out') {
@@ -323,9 +322,6 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
         justify-content: center;
         align-items: center;
         padding: 1rem;
-        /* background-color: #f0f0f0; */
-        /* border-radius: 1rem; */
-        /* margin-bottom: 1rem; */
     }
     .point{
         margin-left:4rem ;
