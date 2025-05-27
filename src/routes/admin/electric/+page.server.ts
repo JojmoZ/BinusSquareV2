@@ -3,6 +3,7 @@ import type { PageServerLoad } from "./$types";
 import { redirectIfNotAdmin } from "$lib/server/guard";
 import { db } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
+import { ne } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
   redirectIfNotAdmin(event);
   if (!event.locals.user) {
@@ -10,7 +11,8 @@ export const load: PageServerLoad = async (event) => {
   }
   const users = await db
     .select({ id: table.user.id, username: table.user.username })
-    .from(table.user);
+    .from(table.user)
+    .where(ne(table.user.username, "admin"));
 
   return { users };
 };
