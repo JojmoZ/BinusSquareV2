@@ -24,4 +24,4 @@ vite.config.ts.timestamp-*
 
 # Svelte
 .svelte-kit
-/src/static/
+./src/static/
