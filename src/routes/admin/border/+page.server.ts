@@ -4,6 +4,7 @@ import { db } from "$lib/server/db";
 import * as table from "$lib/server/db/schema";
 import { ne } from "drizzle-orm";
 import fs from "fs/promises";
+import type { Actions } from "@sveltejs/kit";
 export const load: PageServerLoad = async (event) => {
   redirectIfNotAdmin(event);
   const users = await db
@@ -18,11 +19,12 @@ export const load: PageServerLoad = async (event) => {
       file: table.borderdetail.file,
       title: table.borderdetail.title,
     })
-    .from(table.borderdetail);
+    .from(table.borderdetail)
+    .orderBy(table.borderdetail.id);
   return { users, creationDetail };
 };
 
-export const actions = {
+export const actions: Actions = {
   insertCreation: async ({ request }) => {
     const form = await request.formData();
     const userId = form.get("userId");
@@ -49,19 +51,36 @@ export const actions = {
     const uploadDir = "static/uploads";
     const filename = `${Date.now()}-${file.name}`;
     const filepath = `${uploadDir}/${filename}`;
+    const publicUrl = `/uploads/${filename}`;
     const buffer = Buffer.from(await file.arrayBuffer());
     await fs.writeFile(filepath, buffer);
     const [borderRow] = await db
       .insert(table.bordercreation)
       .values({ userId })
       .returning({ id: table.bordercreation.id });
-    await db.insert(table.borderdetail).values({
-      borderId: borderRow.id,
-      title,
-      category,
-      file: filepath,
-      date: dateValue,
-    });
-    return { message: "Border creation inserted successfully!" };
+    const [newCreationDetail] = await db
+      .insert(table.borderdetail)
+      .values({
+        borderId: borderRow.id,
+        title,
+        category,
+        file: publicUrl,
+        date: dateValue,
+      })
+      .returning({
+        id: table.borderdetail.id,
+        date: table.borderdetail.date,
+        category: table.borderdetail.category,
+        file: table.borderdetail.file,
+        title: table.borderdetail.title,
+      });
+    if (!newCreationDetail) {
+      return { error: "Failed to save creation details." };
+    }
+
+    return {
+      message: "Border creation inserted successfully!",
+      creationDetail: newCreationDetail,
+    };
   },
 };
