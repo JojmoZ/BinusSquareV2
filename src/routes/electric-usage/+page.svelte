@@ -1,6 +1,4 @@
 <script lang="ts">
-	import Header from './../Header.svelte';
-	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import type { PageData } from './$types';
 	const { data } = $props() as { data: PageData };
