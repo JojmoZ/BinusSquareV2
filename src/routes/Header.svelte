@@ -45,7 +45,7 @@
 		</li>
 		{:else}
 		<li aria-current={$page.url.pathname === '/border-history' ? 'page' : undefined}>
-			<a href="/border-history">Border History</a>
+			<a href="/border-history">Border Creations</a>
 		</li>
 		{/if}
 		<li aria-current={$page.url.pathname === "/add-point" ? 'page' :undefined}>

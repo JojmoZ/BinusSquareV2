@@ -5,6 +5,7 @@ import * as table from "$lib/server/db/schema";
 import { ne } from "drizzle-orm";
 import fs from "fs/promises";
 import type { Actions } from "@sveltejs/kit";
+import { eq } from "drizzle-orm";
 export const load: PageServerLoad = async (event) => {
   redirectIfNotAdmin(event);
   const users = await db
@@ -15,11 +16,17 @@ export const load: PageServerLoad = async (event) => {
     .select({
       id: table.borderdetail.id,
       date: table.borderdetail.date,
+      username: table.user.username,
       category: table.borderdetail.category,
       file: table.borderdetail.file,
       title: table.borderdetail.title,
     })
     .from(table.borderdetail)
+    .innerJoin(
+      table.bordercreation,
+      eq(table.bordercreation.id, table.borderdetail.borderId)
+    )
+    .innerJoin(table.user, eq(table.user.id, table.bordercreation.userId))
     .orderBy(table.borderdetail.id);
   return { users, creationDetail };
 };

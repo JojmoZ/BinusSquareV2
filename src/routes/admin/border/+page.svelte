@@ -23,6 +23,7 @@
     type CreationDetailItem = {
         id: number;
         date: string | Date; 
+        username: string;
         category: string;
         file: string;
         title: string;
@@ -151,6 +152,7 @@
         {#if filteredCreations.length > 0}
             {#each filteredCreations as creation (creation.id)} <div class="creation-card">
                     <h3>{creation.title}</h3>
+                    <p><strong>User:</strong>{creation.username}</p>
                     <p><strong>Category:</strong> {creation.category}</p>
                     <p><strong>Date:</strong> {new Date(creation.date).toLocaleDateString()}</p>
                     <a
@@ -169,7 +171,6 @@
 </div>
 
 <style>
-    /* ... your existing styles ... */
     .file-image-preview {
         max-width: 100%;
         max-height: 300px;
@@ -212,15 +213,13 @@
     .real-home {
         min-height: 100vh;
         display: flex;
-        flex-direction: column; /* Changed to column for overall layout */
-        /* justify-content: center;  Removed for top-to-bottom flow */
-        /* align-items: center; Removed for top-to-bottom flow */
-        padding: 1rem; /* Added padding for overall real-home */
+        flex-direction: column; 
+        padding: 1rem; 
     }
-    .home { /* Added to wrap the form part */
+    .home { 
         width: 100%;
-        max-width: 520px; /* Max width for the form area */
-        margin: 0 auto; /* Center the form area */
+        max-width: 520px; 
+        margin: 0 auto; 
     }
     .creation-form {
         background: linear-gradient(135deg, #f5f7fa, #e8edf3);
@@ -230,8 +229,8 @@
         display: flex;
         flex-direction: column;
         gap: 1.25rem;
-        /* max-width is handled by .home parent now */
-        /* margin: 2rem auto; */
+        
+        
     }
     .form-group {
         display: flex;
@@ -249,7 +248,7 @@
         border: 1px solid #ccc;
         border-radius: 0.5rem;
         transition: border-color 0.2s;
-        box-sizing: border-box; /* Good for layout */
+        box-sizing: border-box; 
     }
     input:focus,
     select:focus {
@@ -283,10 +282,10 @@
     }
     .creation-list {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Slightly wider cards */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
         gap: 1.5rem;
         padding: 1rem;
-        max-width: 1200px; /* Wider list container */
+        max-width: 1200px; 
         margin: 0 auto;
     }
     .creation-card {
@@ -296,7 +295,7 @@
         overflow: hidden;
         display: flex;
         flex-direction: column;
-        padding: 1.25rem; /* Increased padding */
+        padding: 1.25rem; 
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
     .creation-card:hover {
@@ -304,47 +303,47 @@
         box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
     }
     .creation-card h3 {
-        margin-top: 0; /* Remove default top margin */
-        margin-bottom: 0.75rem; /* Spacing after title */
+        margin-top: 0; 
+        margin-bottom: 0.75rem; 
         color: #2c3e50;
-        font-size: 1.15rem; /* Slightly larger title */
+        font-size: 1.15rem; 
     }
     .creation-card p {
         margin: 0.3rem 0;
-        font-size: 0.9rem; /* Slightly smaller paragraph text */
-        color: #555; /* Softer text color */
+        font-size: 0.9rem; 
+        color: #555; 
         line-height: 1.5;
     }
     .view-file {
-        margin-top: 0.75rem; /* More space above link */
-        padding: 0.5rem 0; /* Make clickable area slightly larger */
+        margin-top: 0.75rem; 
+        padding: 0.5rem 0; 
         color: #1976d2;
         font-weight: 600;
         text-decoration: none;
-        display: inline-block; /* For padding to take effect nicely */
+        display: inline-block; 
         border-radius: 4px;
         transition: background-color 0.2s;
     }
     .view-file:hover {
         text-decoration: underline;
-        /* background-color: #e3f2fd; Light blue background on hover */
+        
     }
     .file-preview {
         font-size: 0.9rem;
         margin-top: 0.75rem;
         color: #333;
-        /* font-style: italic; */
+        
     }
     .section-divider {
         border: 0;
         height: 1px;
         background-color: #e0e0e0;
-        margin: 2.5rem 0; /* More spacing around divider */
+        margin: 2.5rem 0; 
     }
     .items-heading {
         text-align: center;
-        margin-bottom: 1.5rem; /* Space after heading */
-        font-size: 1.6rem; /* Slightly larger */
+        margin-bottom: 1.5rem; 
+        font-size: 1.6rem; 
         color: #333;
     }
 </style>

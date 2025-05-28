@@ -145,7 +145,7 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
         {/each}
         
 			{:else}
-				<p>No redeemable items available right now.</p>
+				<p class="nothing">No redeemable items available right now.</p>
 			{/if}
 		</div>
 	</div>
@@ -172,7 +172,7 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
                     </div>
                 {/each}
             {:else}
-                <p>You have not redeemed any items yet.</p>
+                <p class="nothing">You have not redeemed any items yet.</p>
             {/if}
         </div>
     </div>
@@ -220,6 +220,11 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
         background-color: #f44336;
         color: white;
     }
+	.nothing{
+		text-align: center;
+		font-size: 1.2rem;
+		color: #666;
+	}
     .no-reject:hover {
         background-color: #e53935;
         cursor: pointer;
