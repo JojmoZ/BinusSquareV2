@@ -132,15 +132,16 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
                     {/if}
                 </div>
                 <h2>{item.name}</h2>
-                <p>Price: {item.price} pts</p>
-                <p>Stock: {item.stock}</p>
+                <p>Price: <b>{item.price} pts</b> </p>
+                <p>Stock: <b>{item.stock}</b> </p>
                 <button
-                class="{item.stock > 0 ? "redeem-button" : ""} {data.user.point < item.price && item.stock > 0  ? 'red-button' : ''}"
+	class="redeem-button {data.user.point < item.price && item.stock > 0  ? 'red-button' : ''}"
 	onclick={() => openRedeemModal(item.id, item.name, item.price)}
 	disabled={item.stock <= 0 || data.user.point < item.price}
 >
 	Redeem
 </button>
+
             </div>
         {/each}
         
@@ -168,7 +169,7 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
                     <div class="redeem-card owned-card">
                         <img src={item.preview_img} alt={item.name} class="redeem-image" />
                         <h2>{item.quantity > 1 ? `${item.quantity}x ${item.name}` : item.name}</h2>
-                        <p>Price: {item.price} pts</p>
+                        <p>Price: <b>{item.price} pts</b> </p>
                     </div>
                 {/each}
             {:else}
@@ -199,8 +200,11 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
 {/if}
 <style>
     .owned-container {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	/* display: grid; */
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	/* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
 	gap: 1rem;
 	padding: 1rem;
 }
@@ -336,13 +340,23 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
         right:2rem;
     }
 .redeem-container {
-	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	/* display: grid; */
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	/* grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); */
 	gap: 1rem;
 	padding: 1rem;
 }
+.redeem-card h2 {
+	font-size: 1.4rem;
+	font-weight: bold;
+	margin: 0.5rem 0;
+	color: #333;
+}
 
 .redeem-card {
+	width: 240px;
 	background: #f9f9f9;
 	padding: 1rem;
 	border-radius: 1rem;
@@ -372,5 +386,37 @@ type OwnedItem = { id: number; name: string; price: number; preview_img: string 
 	object-fit: cover;
 	border-radius: 0.5rem;
 	margin-bottom: 0.5rem;
+}
+.redeem-button {
+	background-color: #4caf50;
+	color: white;
+	padding: 0.6rem 1rem;
+	border: none;
+	border-radius: 0.5rem;
+	font-size: 1rem;
+	font-weight: 600;
+	transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.redeem-button:hover:not(:disabled),
+.redeem-button:focus-visible {
+	background-color: #388e3c;
+	transform: scale(1.05);
+	cursor: pointer;
+}
+
+.red-button {
+	background-color: #ff9800;
+}
+
+.red-button:hover:not(:disabled),
+.red-button:focus-visible {
+	background-color: #f57c00;
+	transform: scale(1.05);
+	cursor: pointer;
+}
+.redeem-card p {
+	margin: 0.25rem 0;
+	color: #555;
 }
 </style>
