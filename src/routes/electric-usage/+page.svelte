@@ -7,9 +7,6 @@
 	let totalKwh = $state<number>(0);
 	let selectedYear = $state<string>('');
 	
-    
-    
-    
 	$effect(() => {
 		if (data.byYear && data.byYear.length && !selectedYear) {
 			const currentYear = new Date().getFullYear().toString();
@@ -53,12 +50,33 @@
 					}]
 				},
 				options: {
-					responsive: true,
-                    maintainAspectRatio: false,
-					scales: {
-						y: { beginAtZero: true }
-					}
-				}
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: filter === 'year' ? 'Month' : 'Days',
+        font: {
+          size: 14,
+          weight: 'bold'
+        }
+      }
+    },
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: 'KWh',
+        font: {
+          size: 14,
+          weight: 'bold'
+        }
+      }
+    }
+  }
+}
+
 			});
 		} else { 
 			const monthData = data.byMonth.find((m) => m.label === selectedMonth);
@@ -76,12 +94,33 @@
 					}]
 				},
 				options: {
-					responsive: true,
-                    maintainAspectRatio: false,
-					scales: {
-						y: { beginAtZero: true }
-					}
-				}
+  responsive: true,
+  maintainAspectRatio: false,
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: filter === 'year' ? 'Month' : 'Days',
+        font: {
+          size: 14,
+          weight: 'bold'
+        }
+      }
+    },
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: 'KWh',
+        font: {
+          size: 14,
+          weight: 'bold'
+        }
+      }
+    }
+  }
+}
+
 			});
 		}
 	};
@@ -121,8 +160,8 @@
 				<div class="filter-group">
 					<label for="viewBySelect">View By</label> 
 					<select id="viewBySelect" bind:value={filter}>
-						<option value="year">Year</option>
-						<option value="month">Month</option>
+						<option value="year">Months</option>
+						<option value="month">Days</option>
 					</select>
 				</div>
 
@@ -153,7 +192,7 @@
                             </select>
                         </div>
                     {:else}
-                         <div class="filter-group">
+                        <div class="filter-group">
                             <label for="monthSelect">Month</label>
                             <select id="monthSelect" disabled><option>N/A</option></select>
                         </div>
