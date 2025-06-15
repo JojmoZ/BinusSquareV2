@@ -47,6 +47,7 @@ export const load: PageServerLoad = async (event) => {
     months: { label: string; kg: number }[];
   }[] = [];
 
+  
   for (const row of yearRows) {
     const y = parseInt(row.year);
     const m = parseInt(row.month);
@@ -57,17 +58,15 @@ export const load: PageServerLoad = async (event) => {
       yearEntry = { year: y, totalKg: 0, months: [] };
       byYear.push(yearEntry);
     }
-    yearEntry.totalKg += kg;
 
-    let monthEntry = yearEntry.months.find(
-      (entry) => entry.label === m.toString()
-    );
-    if (!monthEntry) {
-      monthEntry = { label: m.toString(), kg: 0 };
-      yearEntry.months.push(monthEntry);
-    }
-    monthEntry.kg += kg;
+    
+    yearEntry.months.push({
+      label: new Date(y, m - 1).toLocaleString("default", { month: "short" }),
+      kg: kg,
+    });
+    yearEntry.totalKg += kg;
   }
+  
 
   const byMonth: {
     label: string;
@@ -88,7 +87,7 @@ export const load: PageServerLoad = async (event) => {
       monthEntry = { label, totalKg: 0, days: [] };
       byMonth.push(monthEntry);
     }
-    monthEntry.days.push({ label: day, kg: weight / 10 });
+    monthEntry.days.push({ label: day, kg: weight }); 
     monthEntry.totalKg += weight;
   }
   return {

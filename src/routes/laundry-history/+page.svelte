@@ -8,8 +8,6 @@
 	let selectedYear = $state<string>('');
 	
     
-    
-    
 	$effect(() => {
 		if (data.byYear && data.byYear.length && !selectedYear) {
 			const currentYear = new Date().getFullYear().toString();
@@ -31,16 +29,45 @@
 	const updateChart = () => {
         
 		if (!chartCanvas || !data.byYear || data.byYear.length === 0) {
-            if(chart) chart.destroy(); 
+            if(chart) chart.destroy();
             chart = null;
             return;
         }
 
 		if (chart) chart.destroy(); 
 
+        
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: filter === 'year' ? 'Month' : 'Day', 
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Weight (kg)', 
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        };
+
 		if (filter === 'year') {
 			const yearData = data.byYear.find((y) => y.year.toString() === selectedYear.toString());
-			if (!yearData) return; 
+			if (!yearData) return;
 
 			chart = new Chart(chartCanvas, {
 				type: 'bar',
@@ -48,40 +75,28 @@
 					labels: yearData.months.map((m) => m.label),
 					datasets: [{
 						label: 'Total Weight',
-						data: yearData.months.map((m) => m.kg), 
+						data: yearData.months.map((m) => m.kg),
 						backgroundColor: '#4caf50'
 					}]
 				},
-				options: {
-					responsive: true,
-                    maintainAspectRatio: false,
-					scales: {
-						y: { beginAtZero: true }
-					}
-				}
+				options: chartOptions 
 			});
 		} else { 
 			const monthData = data.byMonth.find((m) => m.label === selectedMonth);
-			if (!monthData) return; 
+			if (!monthData) return;
 
-			const daysWithData = monthData.days.filter((d) => d.kg > 0); 
+			const daysWithData = monthData.days.filter((d) => d.kg > 0);
 			chart = new Chart(chartCanvas, {
 				type: 'bar',
 				data: {
 					labels: daysWithData.map((d) => d.label),
 					datasets: [{
 						label: 'Daily Weight',
-						data: daysWithData.map((d) => d.kg), 
+						data: daysWithData.map((d) => d.kg),
 						backgroundColor: '#2196f3'
 					}]
 				},
-				options: {
-					responsive: true,
-                    maintainAspectRatio: false,
-					scales: {
-						y: { beginAtZero: true }
-					}
-				}
+				options: chartOptions 
 			});
 		}
 	};
@@ -101,11 +116,9 @@
 
 		if (filter === 'year') {
 			const yearData = data.byYear?.find((y) => y.year.toString() === selectedYear);
-			
 			totalWeight = yearData ? yearData.totalKg : 0; 
 		} else { 
 			const monthData = data.byMonth?.find((m) => m.label === selectedMonth);
-            
 			totalWeight = monthData ? monthData.totalKg : 0;
 		}
 	});
@@ -119,8 +132,8 @@
 				<div class="filter-group">
 					<label for="laundryViewBySelect">View By</label> 
 					<select id="laundryViewBySelect" bind:value={filter}>
-						<option value="year">Year</option>
-						<option value="month">Month</option>
+						<option value="year">Months</option>
+						<option value="month">Days</option>
 					</select>
 				</div>
 
@@ -165,7 +178,7 @@
 		<div class="chart-wrapper">
 			<canvas bind:this={chartCanvas}></canvas>
 		</div>
-		<p class="total-weight"> 
+		<p class="total-weight">
 			Total Weight: {totalWeight.toFixed(2)} kg
 		</p>
 	{:else}
